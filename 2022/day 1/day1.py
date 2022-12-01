@@ -49,12 +49,13 @@ class MaxHeap:
             raise Exception("Empty heap getMax()")
         return self.Heap[1]
 
-path = "test.txt"
+path = "input.txt"
 
-if __name__ == 'main':
+if __name__ == '__main__':
     input = parse_input(path)
     mh = MaxHeap(len(input))
-    map(mh.insert, input)
+    for i in input:
+        mh.insert(i)
     print(mh.getMax())
 
 #print(input)
