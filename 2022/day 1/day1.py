@@ -14,6 +14,8 @@ def parse_input(path : str) -> List[int]:
             continue
 
         sum += int(line)
+    
+    result.append(sum)
 
     return result
 
@@ -30,6 +32,12 @@ class MaxHeap:
     
     def __parent(self, index) -> int:
         return index // 2
+
+    def __left(self, index) -> int:
+        return index * 2
+
+    def __right(self, index) -> int:
+        return index * 2 + 1
 
     def insert(self, el :int) -> None:
         if(self.size >= self.maxsize):
@@ -48,6 +56,29 @@ class MaxHeap:
         if(self.size == 0):
             raise Exception("Empty heap getMax()")
         return self.Heap[1]
+    
+    def __heapify(self, index) -> None:
+        left = self.__left(index)
+        right = self.__right(index)
+
+        if left > self.size and right > self.size:
+            return
+        
+        if(self.Heap[left] > self.Heap[index]):
+            self.Heap[left], self.Heap[index] = self.Heap[index], self.Heap[left]
+            self.__heapify(left)        
+        if (self.Heap[right] > self.Heap[index]):
+            self.Heap[right], self.Heap[index] = self.Heap[index], self.Heap[right]
+            self.__heapify(right)
+
+    #I use it instead of extraction and heap rebuild
+    def extractMax(self) -> int:
+        max_value = self.Heap[1]
+        self.Heap[1] = self.Heap[self.size]
+        self.size -= 1
+        self.__heapify(1)
+
+        return max_value
 
 path = "input.txt"
 
@@ -57,5 +88,5 @@ if __name__ == '__main__':
     for i in input:
         mh.insert(i)
     print(mh.getMax())
-
+    print(mh.extractMax() + mh.extractMax() + mh.extractMax())
 #print(input)

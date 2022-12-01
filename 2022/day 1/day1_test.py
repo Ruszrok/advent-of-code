@@ -44,3 +44,31 @@ def test_four_inorder_getMaxHeap() -> None:
     mh.insert(500)
     mh.insert(3)
     assert 1000 == mh.getMax(), "Four elements works wrong"
+
+def test_four_inorder_getMaxHeap() -> None:
+    mh = MaxHeap(4)
+    mh.insert(1000)
+    mh.insert(2)
+    mh.insert(500)
+    mh.insert(5000)
+    assert 5000 == mh.getMax(), "Four elements works wrong"
+
+def test_four_inorder_extractMaxHeap() -> None:
+    mh = MaxHeap(4)
+    mh.insert(1000)
+    mh.insert(2)
+    mh.insert(500)
+    mh.insert(5000)
+    assert 5000 == mh.extractMax(), "Four elements works wrong"
+    assert 1000 == mh.extractMax(), "Four elements works wrong"
+
+def test_five_inorder_bug_fix_extractMaxHeap() -> None:
+    mh = MaxHeap(5)
+    mh.insert(1000)
+    mh.insert(2)
+    mh.insert(500)
+    mh.insert(5000)
+    mh.insert(300)
+    assert 5000 == mh.extractMax(), "Four elements works wrong"
+    assert 1000 == mh.extractMax(), "Four elements works wrong"
+    assert 500 == mh.extractMax(), "Four elements works wrong"
