@@ -1,7 +1,7 @@
 from day1 import MaxHeap
 import pytest
 
-def test_raise_getMaxHeap() -> None:
+def test_raise_invalid_maxsize_MaxHeap() -> None:
     with pytest.raises(Exception):
         mh = MaxHeap(0)
 
@@ -9,7 +9,13 @@ def test_raise_getMaxHeap() -> None:
 def test_raise_min_getMaxHeap() -> None:
     with pytest.raises(Exception):
         mh = MaxHeap(1)
-        assert mh.getMax()
+        mh.getMax()
+
+def test_raise_overflow_MaxHeap() -> None:
+    with pytest.raises(Exception):
+        mh = MaxHeap(1)
+        mh.insert(0)
+        mh.insert(1)
 
 def test_base_getMaxHeap() -> None:
     mh = MaxHeap(3)
