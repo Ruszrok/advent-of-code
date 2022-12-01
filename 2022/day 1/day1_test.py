@@ -30,7 +30,7 @@ def test_three_getMaxHeap() -> None:
     assert 3 == mh.getMax(), "Three elements works wrong"
 
 def test_four_getMaxHeap() -> None:
-    mh = MaxHeap(3)
+    mh = MaxHeap(4)
     mh.insert(1)
     mh.insert(2)
     mh.insert(3)
@@ -38,7 +38,7 @@ def test_four_getMaxHeap() -> None:
     assert 3 == mh.getMax(), "Four elements works wrong"
 
 def test_four_inorder_getMaxHeap() -> None:
-    mh = MaxHeap(3)
+    mh = MaxHeap(4)
     mh.insert(1000)
     mh.insert(2)
     mh.insert(500)

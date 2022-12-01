@@ -18,24 +18,36 @@ def parse_input(path : str) -> List[int]:
     return result
 
 class MaxHeap:
+    #Packed tree [sys.max, r, r_l, r_r,r_l_l, r_l_r, 0, 0]
     def __init__(self, maxsize) -> None:
         if(maxsize < 1):
             raise Exception('Invalid max size')
 
         self.maxsize = maxsize
         self.size = 0 
-        self.Heap = [0] * maxsize
+        self.Heap = [0] * (maxsize + 1)
         self.Heap[0] = sys.maxsize
-        self.FRONT = 1
     
+    def __parent(self, index) -> int:
+        return index // 2
+
     def insert(self, el :int) -> None:
-        self.FRONT += 1
-        pass
+        if(self.size >= self.maxsize):
+            raise Exception('overflow')
+
+        self.size += 1
+        self.Heap[self.size] = el
+        current = self.size
+        
+        while self.Heap[self.__parent(current)] < self.Heap[current]:
+            self.Heap[self.__parent(current)], self.Heap[current] = self.Heap[current], self.Heap[self.__parent(current)]
+            current = self.__parent(current)
+        
 
     def getMax(self) -> int:
-        if(self.FRONT == 1):
+        if(self.size == 0):
             raise Exception("Empty heap getMax()")
-        return self.Heap[0]
+        return self.Heap[1]
 
 path = "test.txt"
 
