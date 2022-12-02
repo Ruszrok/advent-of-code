@@ -2,9 +2,6 @@
 import io
 from typing import List
 from typing import Tuple
-                 #Rock, Paper, Scisors
-DICT_FIRST = {'A' : 1, 'B' : 2, 'C' : 3}
-DICT_SECOND = {'X' : 1, 'Y' : 2, 'Z' : 3}
 
 def parse_input(path : str) -> List[Tuple[int, int]]:
     result = []
