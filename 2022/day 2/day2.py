@@ -15,39 +15,16 @@ def parse_input(path : str) -> List[Tuple[int, int]]:
 
     return result
 
+GAME_SCORE_1 = {(1,1):4, (1,2):8,(1,3):3,(2,1):1,(2,2):5,(2,3):9,(3,1):7,(3,2):2,(3,3):6}
+GAME_SCORE_2 = {(1,1):3, (1,2):4,(1,3):8,(2,1):1,(2,2):5,(2,3):9,(3,1):2,(3,2):6,(3,3):7}
+
 if __name__ == "__main__":
     input = parse_input("input.txt")
-    #input = [(1, 2), (2,1), (3,3)]
     total = 0
     total2 = 0
     for pair in input:
-        #first total calculation
-        total += pair[1]
-        if(pair[0] == pair[1]):
-            total += 3
-        elif(pair in [(1,2), (2,3), (3,1)]):
-            total += 6
-        
-        #second strategy calculation
-        #1 - lose, 2 - draw, 3 - win
-        total2 += 3 * (pair[1] - 1)
-        if(pair[1] == 2):
-            total2 += pair[0]
-        elif(pair[1] == 3):
-            if(pair[0] == 1):
-                total2 += 2
-            elif(pair[0] == 2):
-                total2 += 3
-            else:
-                total2 += 1
-        else:
-            if(pair[0] == 1):
-                total2 += 3
-            elif(pair[0] == 2):
-                total2 += 1
-            else:
-                total2 += 2
-#expected - 14163
-#12091
+        total += GAME_SCORE_1[pair]
+        total2 += GAME_SCORE_2[pair]
+
     print(total)
     print(total2)
