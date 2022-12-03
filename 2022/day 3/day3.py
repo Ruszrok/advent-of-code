@@ -57,4 +57,3 @@ if __name__ == "__main__":
     result2 = second_task_solution(input)
     print(result1)
     print(result2)
-        
