@@ -12,6 +12,10 @@ class Range:
     
     def contains(self, r: Range) -> bool:
         return self.start <= r.start and self.finish >= r.finish
+    
+    def intersect(self, r: Range) -> bool:
+        is_contains = self.contains(r) or r.contains(self)
+        return is_contains or (self.start <= r.start and r.start <= self.finish) or (self.start <= r.finish and r.finish <= self.finish)
 
     def __str__(self) -> str:
         return f'{self.start}-{self.finish}'
@@ -28,10 +32,13 @@ def parse_input(path : str) -> List[Tuple[Range, Range]]:
 if __name__ == "__main__":
     name = "input.txt"
     ranges = parse_input(name)
-    count = 0 
+    count_contains = 0
+    count_intersect = 0
     for r in ranges:
         if(r[0].contains(r[1]) or r[1].contains(r[0])):
-            print(r[0], r[1])
-            count += 1
+            count_contains += 1
+        if(r[0].intersect(r[1])):
+            count_intersect += 1
     
-    print(count)
+    print('Contains: ', count_contains, "-- Test: ", 2)
+    print('Intersect: ', count_intersect, "-- Test: ", 4)
