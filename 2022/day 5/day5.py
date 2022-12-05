@@ -56,18 +56,36 @@ def parse_input(path : str):
 
     return (state_decoded, moves_decoded)
 
+def operate_crane9000(state, moves):
+    for count, from_p, to_p in moves:
+        if(len(state[from_p-1]) < 0):
+            print('ERROR: ', count, from_p, to_p)
+            return
+
+        for i in range(count):
+            el = state[from_p-1].pop()
+            state[to_p - 1].append(el)
+
+def operate_crane9001(state, moves):
+    for count, from_p, to_p in moves:
+        if(len(state[from_p-1]) < 0):
+            print('ERROR: ', count, from_p, to_p)
+            return
+        
+        for el in state[from_p-1][-1*count:]:    
+            state[to_p-1].append(el)
+
+        for i in range(count):    
+            state[from_p-1].pop()
+
 if __name__ == "__main__":
     name = "input.txt"
     input = parse_input(name)
     state = input[0]
     moves = input[1]
-    for count, from_p, to_p in moves:
-        for i in range(count):
-            if(len(state[from_p-1]) == 0):
-                print('ERROR: ', count, from_p, to_p)
-            el = state[from_p-1].pop()
-            state[to_p - 1].append(el)
-    print(state)
+    
+    operate_crane9001(state, moves)
+
     result = ""
     for s in state:
         if(len(s) == 0):
