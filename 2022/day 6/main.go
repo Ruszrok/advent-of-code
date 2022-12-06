@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 type queue []rune
@@ -22,6 +24,18 @@ func (q queue) contains(param rune) bool {
 }
 
 func ParseInput(pathToFile string) string {
+	f, err := os.Open(pathToFile)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to open file: %s", pathToFile))
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		return scanner.Text()
+	}
+
 	return ""
 }
 
@@ -49,6 +63,6 @@ func GetCodePostion(input string, size int) int {
 func main() {
 	var s = "input.txt"
 	input := ParseInput(s)
-	res := GetCodePostion(input, 4)
+	res := GetCodePostion(input, 14)
 	fmt.Println(res)
 }
