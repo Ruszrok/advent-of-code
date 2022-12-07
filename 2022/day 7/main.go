@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -78,13 +79,31 @@ func ParseInput(pathToFile string) *TreeNode {
 		}
 
 		if isListing {
+			var node *TreeNode = nil
 			if strings.HasPrefix(line, "dir") {
 				s := strings.Replace(line, "dir ", "", -1)
 				dirName := strings.Trim(s, "/n")
-				node := NewTreeNode(dirName, currentNode)
+				node = NewTreeNode(dirName, currentNode)
+			} else {
+				size := -1
+				fileName := ""
+				for i, val := range strings.Split(line, " ") {
+					if i == 0 {
+						size, err = strconv.Atoi(val)
+						if err != nil {
+							panic(fmt.Sprintf("Error in int parsing %s. Line: %s", val, line))
+						}
+					} else {
+						fileName = strings.Trim(val, "\n")
+					}
+				}
+				node = NewTreeNode(fileName, currentNode, size)
+			}
+
+			if node != nil {
 				currentNode.AppendChild(node)
 			} else {
-
+				panic(fmt.Sprintf("Failed to parse line. %s", line))
 			}
 		}
 
