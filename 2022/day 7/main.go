@@ -149,6 +149,17 @@ func CalculateSumOfAllFoldersLessThan(node *TreeNode, limit int, sum *int) {
 	}
 }
 
+func FindFoldersWithSizeGreaterThan(node *TreeNode, limit int, result *[]*TreeNode) {
+	if node.IsFolder() {
+		if node.size >= limit {
+			*result = append(*result, node)
+		}
+		for _, c := range node.childs {
+			FindFoldersWithSizeGreaterThan(c, limit, result)
+		}
+	}
+}
+
 func main() {
 	isTestFile := false
 	flag.BoolVar(&isTestFile, "t", false, "display in uppercase")
@@ -161,6 +172,25 @@ func main() {
 	CalculateAllSizes(root)
 	result := 0
 	CalculateSumOfAllFoldersLessThan(root, 100000, &result)
+	fmt.Printf("Result 1st part: %d\n", result)
 
-	fmt.Printf("Result: %d\n", result)
+	fsLimit := 70000000
+	updateSize := 30000000
+	freeSpace := fsLimit - root.size
+	if freeSpace < updateSize {
+		neededSpace := updateSize - freeSpace
+		neededFolders := []*TreeNode{}
+		FindFoldersWithSizeGreaterThan(root, neededSpace, &neededFolders)
+
+		minimal := fsLimit
+		for _, f := range neededFolders {
+			if f.size < minimal {
+				minimal = f.size
+			}
+		}
+
+		fmt.Printf("Result 2nd part: %d\n", minimal)
+	} else {
+		fmt.Printf("Result 2nd part: 0")
+	}
 }
