@@ -24,9 +24,9 @@ func NewTreeNode(name string, parent *TreeNode, size int) *TreeNode {
 	n.parent = parent
 	n.size = size
 	if n.size == DEFAULT_SIZE {
-		n.childs = nil
-	} else {
 		n.childs = []*TreeNode{}
+	} else {
+		n.childs = nil
 	}
 	return n
 }
