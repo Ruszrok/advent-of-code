@@ -100,7 +100,7 @@ func ParseInput(pathToFile string) *TreeNode {
 			var node *TreeNode = nil
 			if strings.HasPrefix(line, "dir") {
 				s := strings.Replace(line, "dir ", "", -1)
-				dirName := strings.Trim(s, "/n")
+				dirName := strings.Trim(s, "\n")
 				node = NewTreeNode(dirName, currentNode, DEFAULT_SIZE)
 			} else {
 				size := -1
