@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const DEFAULT_SIZE = -1
+const DEFAULT_SIZE = 0
 
 type TreeNode struct {
 	parent *TreeNode
@@ -18,15 +18,11 @@ type TreeNode struct {
 	size   int
 }
 
-func NewTreeNode(name string, parent *TreeNode, size ...int) *TreeNode {
-	s := DEFAULT_SIZE
-	if len(size) == 0 {
-		s = size[0]
-	}
+func NewTreeNode(name string, parent *TreeNode, size int) *TreeNode {
 	n := new(TreeNode)
 	n.name = name
 	n.parent = parent
-	n.size = s
+	n.size = size
 	if n.size == DEFAULT_SIZE {
 		n.childs = nil
 	} else {
@@ -67,7 +63,7 @@ func ParseInput(pathToFile string) *TreeNode {
 
 	scanner := bufio.NewScanner(f)
 
-	root := NewTreeNode("/", nil)
+	root := NewTreeNode("/", nil, DEFAULT_SIZE)
 	var currentNode *TreeNode = nil
 	isListing := false
 
@@ -103,7 +99,7 @@ func ParseInput(pathToFile string) *TreeNode {
 			if strings.HasPrefix(line, "dir") {
 				s := strings.Replace(line, "dir ", "", -1)
 				dirName := strings.Trim(s, "/n")
-				node = NewTreeNode(dirName, currentNode)
+				node = NewTreeNode(dirName, currentNode, DEFAULT_SIZE)
 			} else {
 				size := -1
 				fileName := ""
@@ -128,7 +124,25 @@ func ParseInput(pathToFile string) *TreeNode {
 		}
 	}
 
-	return nil
+	return root
+}
+
+func CalculateAllSizes(node *TreeNode) {
+	if node.IsFolder() {
+		for _, c := range node.childs {
+			CalculateAllSizes(c)
+			node.size += c.size
+		}
+	}
+}
+
+func CalculateSumOfAllFoldersLessThan(node *TreeNode, limit int, sum *int) {
+	if node.IsFolder() && node.size <= limit {
+		*sum += node.size
+		for _, c := range node.childs {
+			CalculateSumOfAllFoldersLessThan(c, limit, sum)
+		}
+	}
 }
 
 func main() {
@@ -139,6 +153,10 @@ func main() {
 	if !isTestFile {
 		inputFileName = "input.txt"
 	}
-	fileTree := ParseInput(inputFileName)
-	fmt.Printf("Test")
+	root := ParseInput(inputFileName)
+	CalculateAllSizes(root)
+	result := 0
+	CalculateSumOfAllFoldersLessThan(root, 10000, &result)
+
+	fmt.Printf("%d", result)
 }
