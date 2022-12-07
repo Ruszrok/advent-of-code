@@ -48,6 +48,16 @@ func (t *TreeNode) AppendChild(child *TreeNode) {
 	}
 }
 
+func (t *TreeNode) FindChildBy(name string) *TreeNode {
+	for _, val := range t.childs {
+		if val.name == name {
+			return val
+		}
+	}
+
+	return nil
+}
+
 func ParseInput(pathToFile string) *TreeNode {
 	f, err := os.Open(pathToFile)
 	if err != nil {
@@ -76,6 +86,16 @@ func ParseInput(pathToFile string) *TreeNode {
 
 		if strings.HasPrefix(line, "$ cd") {
 			isListing = false
+			pathToNavigate := strings.Trim(strings.Replace(line, "$cd ", "", -1), "\n")
+			if pathToNavigate == ".." {
+				currentNode = currentNode.parent
+			} else {
+				currentNode = currentNode.FindChildBy(pathToNavigate)
+			}
+			if currentNode == nil {
+				panic(fmt.Sprintf("Parsing broken on line: %s", line))
+			}
+			continue
 		}
 
 		if isListing {
@@ -106,7 +126,6 @@ func ParseInput(pathToFile string) *TreeNode {
 				panic(fmt.Sprintf("Failed to parse line. %s", line))
 			}
 		}
-
 	}
 
 	return nil
