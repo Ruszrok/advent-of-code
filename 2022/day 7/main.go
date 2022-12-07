@@ -82,12 +82,14 @@ func ParseInput(pathToFile string) *TreeNode {
 
 		if strings.HasPrefix(line, "$ cd") {
 			isListing = false
-			pathToNavigate := strings.Trim(strings.Replace(line, "$cd ", "", -1), "\n")
+			pathToNavigate := strings.Trim(strings.Replace(line, "$ cd ", "", -1), "\n")
+
 			if pathToNavigate == ".." {
 				currentNode = currentNode.parent
 			} else {
 				currentNode = currentNode.FindChildBy(pathToNavigate)
 			}
+
 			if currentNode == nil {
 				panic(fmt.Sprintf("Parsing broken on line: %s", line))
 			}
@@ -137,8 +139,10 @@ func CalculateAllSizes(node *TreeNode) {
 }
 
 func CalculateSumOfAllFoldersLessThan(node *TreeNode, limit int, sum *int) {
-	if node.IsFolder() && node.size <= limit {
-		*sum += node.size
+	if node.IsFolder() {
+		if node.size <= limit {
+			*sum += node.size
+		}
 		for _, c := range node.childs {
 			CalculateSumOfAllFoldersLessThan(c, limit, sum)
 		}
@@ -156,7 +160,7 @@ func main() {
 	root := ParseInput(inputFileName)
 	CalculateAllSizes(root)
 	result := 0
-	CalculateSumOfAllFoldersLessThan(root, 10000, &result)
+	CalculateSumOfAllFoldersLessThan(root, 100000, &result)
 
-	fmt.Printf("%d", result)
+	fmt.Printf("Result: %d\n", result)
 }
