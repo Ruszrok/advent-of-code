@@ -64,12 +64,16 @@ func IsVisible(forest *[][]int, posX, posY, rowC, colC int) int {
 	if visible {
 		return 1
 	}
+
 	visible = true
 	for i := posY + 1; i < colC; i++ {
 		if f[posX][i] >= height {
 			visible = false
 			break
 		}
+	}
+	if visible {
+		return 1
 	}
 
 	visible = true
@@ -97,6 +101,7 @@ func IsVisible(forest *[][]int, posX, posY, rowC, colC int) int {
 	return 0
 }
 
+// First - 1851
 func main() {
 	isTestFile := false
 	flag.BoolVar(&isTestFile, "t", false, "display in uppercase")
@@ -117,6 +122,6 @@ func main() {
 			count += (*visibilityMap)[i][j]
 		}
 	}
-	fmt.Println(*visibilityMap)
+
 	fmt.Println(count)
 }
