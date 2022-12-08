@@ -23,8 +23,8 @@ func ParseInput(pathToFile string) *[][]int {
 	for scanner.Scan() {
 		result = append(result, []int{})
 		line := scanner.Text()
-		parsedStr := strings.Trim(line, "\n")
-		for i, c := range parsedStr {
+
+		for i, c := range strings.Trim(line, "\n") {
 			v, err := strconv.Atoi(string(c))
 			if err != nil {
 				panic(fmt.Sprintf("Parsing error line: %s | position: %d | rune: %c", line, i, c))
