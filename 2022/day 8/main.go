@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+//Interesting implementation with directions instead of 4 loops. https://github.com/mikejoh12/advent-of-code-2022/blob/main/8/day8.go
+
 func ParseInput(pathToFile string) *[][]int {
 	f, err := os.Open(pathToFile)
 	if err != nil {
@@ -44,6 +46,7 @@ func IsVisible(forest *[][]int, posX, posY, rowC, colC int) int {
 
 	f := *forest
 	height := f[posX][posY]
+
 	visible := true
 	for i := posY - 1; i >= 0; i-- {
 		if f[posX][i] >= height {
