@@ -101,6 +101,49 @@ func IsVisible(forest *[][]int, posX, posY, rowC, colC int) int {
 	return 0
 }
 
+func GetScenicScore(forest *[][]int, posX, posY, rowC, colC int) int {
+	if posX == 0 || posX == rowC-1 || posY == 0 || posY == colC-1 {
+		return 0
+	}
+
+	f := *forest
+	height := f[posX][posY]
+
+	left := 0
+	for i := posY - 1; i >= 0; i-- {
+		left += 1
+		if f[posX][i] >= height {
+			break
+		}
+	}
+
+	right := 0
+	for i := posY + 1; i < colC; i++ {
+		right += 1
+		if f[posX][i] >= height {
+			break
+		}
+	}
+
+	top := 0
+	for i := posX - 1; i >= 0; i-- {
+		top += 1
+		if f[i][posY] >= height {
+			break
+		}
+	}
+
+	down := 0
+	for i := posX + 1; i < rowC; i++ {
+		down += 1
+		if f[i][posY] >= height {
+			break
+		}
+	}
+
+	return left * right * top * down
+}
+
 // First - 1851
 func main() {
 	isTestFile := false
@@ -114,14 +157,21 @@ func main() {
 
 	// Initialize visibility map
 	visibilityMap, rowsC, columnsC := InitializeVisibilityMap(parsedInput)
+	scenicScore, _, _ := InitializeVisibilityMap(parsedInput)
 
 	count := 0
+	maxScore := 0
 	for i := 0; i < rowsC; i++ {
 		for j := 0; j < columnsC; j++ {
 			(*visibilityMap)[i][j] = IsVisible(parsedInput, i, j, rowsC, columnsC)
+			(*scenicScore)[i][j] = GetScenicScore(parsedInput, i, j, rowsC, columnsC)
 			count += (*visibilityMap)[i][j]
+			if maxScore < (*scenicScore)[i][j] {
+				maxScore = (*scenicScore)[i][j]
+			}
 		}
 	}
 
 	fmt.Println(count)
+	fmt.Println(maxScore)
 }
