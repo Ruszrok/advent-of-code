@@ -37,16 +37,6 @@ func ParseInput(pathToFile string) *[][]int {
 	return &result
 }
 
-func InitializeVisibilityMap(forest *[][]int) (*[][]int, int, int) {
-	numRows := len(*forest)
-	numColumns := len((*forest)[0])
-	visibilityMap := make([][]int, numRows)
-	for i := 0; i < numRows; i++ {
-		visibilityMap[i] = make([]int, numColumns)
-	}
-	return &visibilityMap, numRows, numColumns
-}
-
 func IsVisible(forest *[][]int, posX, posY, rowC, colC int) int {
 	if posX == 0 || posX == rowC-1 || posY == 0 || posY == colC-1 {
 		return 1
@@ -144,7 +134,6 @@ func GetScenicScore(forest *[][]int, posX, posY, rowC, colC int) int {
 	return left * right * top * down
 }
 
-// First - 1851
 func main() {
 	isTestFile := false
 	flag.BoolVar(&isTestFile, "t", false, "display in uppercase")
@@ -154,24 +143,21 @@ func main() {
 		inputFileName = "input.txt"
 	}
 	parsedInput := ParseInput(inputFileName)
-
-	// Initialize visibility map
-	visibilityMap, rowsC, columnsC := InitializeVisibilityMap(parsedInput)
-	scenicScore, _, _ := InitializeVisibilityMap(parsedInput)
+	rowsC, columnsC := len(*parsedInput), len((*parsedInput)[0])
 
 	count := 0
 	maxScore := 0
 	for i := 0; i < rowsC; i++ {
 		for j := 0; j < columnsC; j++ {
-			(*visibilityMap)[i][j] = IsVisible(parsedInput, i, j, rowsC, columnsC)
-			(*scenicScore)[i][j] = GetScenicScore(parsedInput, i, j, rowsC, columnsC)
-			count += (*visibilityMap)[i][j]
-			if maxScore < (*scenicScore)[i][j] {
-				maxScore = (*scenicScore)[i][j]
+			visibility := IsVisible(parsedInput, i, j, rowsC, columnsC)
+			score := GetScenicScore(parsedInput, i, j, rowsC, columnsC)
+			count += visibility
+			if maxScore < score {
+				maxScore = score
 			}
 		}
 	}
 
-	fmt.Println(count)
-	fmt.Println(maxScore)
+	fmt.Println(count, "Expected: ", 1851)
+	fmt.Println(maxScore, "Expected: ", 574080)
 }
