@@ -23,64 +23,10 @@ func InitMove(d string, c int) *Move {
 	return a
 }
 
-type Rope struct {
-	head          Coords
-	tail          Coords
-	tailPositions set.Interface
-}
-
 type Coords [2]int
-
-func InitRope() *Rope {
-	a := new(Rope)
-	a.head = Coords{}
-	a.tail = Coords{}
-	a.tailPositions = set.New(set.NonThreadSafe)
-	a.tailPositions.Add(encodeCoord(a.tail))
-	return a
-}
 
 func encodeCoord(pos Coords) string {
 	return fmt.Sprintf("(%d,%d)", pos[0], pos[1])
-}
-
-func (r *Rope) IsValid() bool {
-	distance := (r.head[0]-r.tail[0])*(r.head[0]-r.tail[0]) + (r.head[1]-r.tail[1])*(r.head[1]-r.tail[1])
-	return distance <= 2
-}
-
-func (r *Rope) MoveRope(m *Move) {
-	for i := 0; i < m.count; i++ {
-		switch m.direction {
-		case "R":
-			r.head[0] += 1
-		case "L":
-			r.head[0] -= 1
-		case "U":
-			r.head[1] += 1
-		case "D":
-			r.head[1] -= 1
-		}
-
-		if !r.IsValid() {
-			switch m.direction {
-			case "R":
-				r.tail[0] = r.head[0] - 1
-				r.tail[1] = r.head[1]
-			case "L":
-				r.tail[0] = r.head[0] + 1
-				r.tail[1] = r.head[1]
-			case "U":
-				r.tail[0] = r.head[0]
-				r.tail[1] = r.head[1] - 1
-			case "D":
-				r.tail[0] = r.head[0]
-				r.tail[1] = r.head[1] + 1
-			}
-		}
-
-		r.tailPositions.Add(encodeCoord(r.tail))
-	}
 }
 
 type MultiKnotRope struct {
@@ -116,7 +62,7 @@ func (r *MultiKnotRope) oneTimeMove(direction string) {
 		if distanceSquare(r.knots[i-1], r.knots[i]) > 4 {
 			movePointDiagonaly(&r.knots[i], r.knots[i-1], direction)
 		} else {
-			movePointLinear(&r.knots[i], direction)
+			proximityMoveLinear(&r.knots[i], r.knots[i-1])
 		}
 
 		if r.IsValid() {
@@ -125,6 +71,7 @@ func (r *MultiKnotRope) oneTimeMove(direction string) {
 	}
 
 	if !r.IsValid() {
+		fmt.Println(r.knots)
 		panic("Rope was broken on OneTimeMove")
 	}
 }
@@ -137,6 +84,16 @@ func movePointDiagonaly(p *Coords, target Coords, direction string) {
 			p[1] = d[1]
 			return
 		}
+	}
+
+	panic(fmt.Sprintf("Diagonlal Move failed Knot = %v, Target=%v, Direction=%s", p, target, direction))
+}
+
+func proximityMoveLinear(p *Coords, t Coords) {
+	if (p[0]-t[0])*(p[0]-t[0]) == 4 {
+		p[0] = p[0] - (p[0]-t[0])/2
+	} else {
+		p[1] = p[1] - (p[1]-t[1])/2
 	}
 }
 
@@ -198,18 +155,16 @@ func main() {
 	isTestFile := false
 	flag.BoolVar(&isTestFile, "t", false, "display in uppercase")
 	flag.Parse()
-	inputFileName := "test.txt"
+	inputFileName := "test1.txt"
 	if !isTestFile {
 		inputFileName = "input.txt"
 	}
 
 	moves := ParseInput(inputFileName)
 
-	rope_c := InitRope()
 	rope := InitMultiKnotRope(2)
 	for _, m := range *moves {
 		rope.MoveRope(m)
-		rope_c.MoveRope(m)
 	}
 
 	mkRope := InitMultiKnotRope(10)
@@ -217,6 +172,7 @@ func main() {
 		mkRope.MoveRope(m)
 	}
 
-	fmt.Println(rope.tailPositions.Size())
-	fmt.Println(mkRope.tailPositions.Size())
+	fmt.Println(rope.tailPositions.Size(), "Expected 6090 main, Expected 13 test, Expected 88 test 1")
+
+	fmt.Println(mkRope.tailPositions.Size(), "Expected 2566 main, Expected 1 test, Expected 36 test 1")
 }
