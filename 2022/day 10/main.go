@@ -84,7 +84,9 @@ func main() {
 	cycleCount := 1
 	currentOpCost := 1
 	current := InitOperation(noop, 0)
-	for cycleCount <= 220 && len(operations) > 0 {
+	screen := strings.Repeat(".", 240)
+
+	for cycleCount <= 240 && len(operations) > 0 {
 		currentOpCost -= 1
 		if currentOpCost == 0 {
 			switch current.name {
@@ -100,12 +102,23 @@ func main() {
 				currentOpCost = op_costs[addx]
 			}
 		}
+
 		if cycleCount == next_control {
 			sum += cycleCount * x
 			next_control += 40
 		}
+
+		mod := cycleCount % 40
+		if (x <= mod && mod <= x+2) || (mod == 0 && x >= 38) {
+			bytes := []byte(screen)
+			bytes[cycleCount-1] = '#'
+			screen = string(bytes)
+		}
 		cycleCount += 1
 	}
 
-	fmt.Println(sum)
+	fmt.Println("Signal strength: ", sum)
+	for i := 0; i < 240; i = i + 40 {
+		fmt.Println(screen[i : i+40])
+	}
 }
