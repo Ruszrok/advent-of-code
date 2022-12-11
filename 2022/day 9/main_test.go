@@ -28,9 +28,9 @@ func TestIsValidRope(t *testing.T) {
 
 	for _, ts := range tests {
 		t.Run(fmt.Sprintf("Get code for input: %v, %v", ts.head, ts.tail), func(t *testing.T) {
-			r := InitRope()
-			r.head = ts.head
-			r.tail = ts.tail
+			r := InitMultiKnotRope(2)
+			r.knots[0] = ts.head
+			r.knots[1] = ts.tail
 			res := r.IsValid()
 			if res != ts.expected {
 				t.Fatalf("Wrong anser. Expected = %t. Got = %t", ts.expected, res)
@@ -59,6 +59,11 @@ func TestIsValidOneTimeMoveInMultiKnotRope(t *testing.T) {
 		{[]Coords{{3, 1}, {2, 0}, {1, 0}, {0, 0}, {0, 0}}, "U", []Coords{{3, 2}, {3, 1}, {2, 1}, {1, 1}, {0, 0}}},
 		{[]Coords{{3, 2}, {3, 1}, {2, 1}, {1, 1}, {0, 0}}, "U", []Coords{{3, 3}, {3, 2}, {2, 1}, {1, 1}, {0, 0}}},
 		{[]Coords{{1, 2}, {2, 1}, {2, 0}, {1, 0}}, "L", []Coords{{0, 2}, {1, 2}, {1, 1}, {1, 0}}},
+		{[]Coords{{1, 1}, {0, 0}}, "U", []Coords{{1, 2}, {1, 1}}},
+		{[]Coords{{1, 1}, {0, 0}}, "R", []Coords{{2, 1}, {1, 1}}},
+		{[]Coords{{1, 1}, {2, 2}}, "D", []Coords{{1, 0}, {1, 1}}},
+		{[]Coords{{1, 1}, {2, 0}}, "L", []Coords{{0, 1}, {1, 1}}},
+		{[]Coords{{3, 3}, {2, 4}}, "R", []Coords{{4, 3}, {3, 3}}},
 	}
 
 	for _, ts := range tests {

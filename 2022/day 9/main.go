@@ -118,14 +118,19 @@ func (r *MultiKnotRope) oneTimeMove(direction string) {
 		} else {
 			movePointLinear(&r.knots[i], direction)
 		}
+
 		if r.IsValid() {
 			break
 		}
 	}
+
+	if !r.IsValid() {
+		panic("Rope was broken on OneTimeMove")
+	}
 }
 
 func movePointDiagonaly(p *Coords, target Coords, direction string) {
-	diags := [4]Coords{{p[0] + 1, p[1] + 1}, {p[0] - 1, p[1] + 1}, {p[0] - 1, p[1] - 1}, {p[0] - 1, p[1] + 1}}
+	diags := [4]Coords{{p[0] + 1, p[1] + 1}, {p[0] - 1, p[1] + 1}, {p[0] - 1, p[1] - 1}, {p[0] + 1, p[1] - 1}}
 	for _, d := range diags {
 		if distanceSquare(target, d) <= 2 {
 			p[0] = d[0]
@@ -200,10 +205,11 @@ func main() {
 
 	moves := ParseInput(inputFileName)
 
-	//rope := InitRope()
+	rope_c := InitRope()
 	rope := InitMultiKnotRope(2)
 	for _, m := range *moves {
 		rope.MoveRope(m)
+		rope_c.MoveRope(m)
 	}
 
 	mkRope := InitMultiKnotRope(10)
@@ -211,8 +217,6 @@ func main() {
 		mkRope.MoveRope(m)
 	}
 
-	fmt.Println(rope.tailPositions)
 	fmt.Println(rope.tailPositions.Size())
-	fmt.Println(mkRope.tailPositions)
 	fmt.Println(mkRope.tailPositions.Size())
 }
