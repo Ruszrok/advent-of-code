@@ -84,7 +84,11 @@ func main() {
 	cycleCount := 1
 	currentOpCost := 1
 	current := InitOperation(noop, 0)
-	screen := strings.Repeat(".", 240)
+	// screen := strings.Repeat(".", 240)
+	screen := [240]byte{}
+	for i := 0; i < len(screen); i++ {
+		screen[i] = '.'
+	}
 
 	for cycleCount <= 240 && len(operations) > 0 {
 		currentOpCost -= 1
@@ -110,15 +114,13 @@ func main() {
 
 		mod := cycleCount % 40
 		if (x <= mod && mod <= x+2) || (mod == 0 && x >= 38) {
-			bytes := []byte(screen)
-			bytes[cycleCount-1] = '#'
-			screen = string(bytes)
+			screen[cycleCount-1] = '#'
 		}
 		cycleCount += 1
 	}
 
 	fmt.Println("Signal strength: ", sum)
 	for i := 0; i < 240; i = i + 40 {
-		fmt.Println(screen[i : i+40])
+		fmt.Println(string(screen[i : i+40]))
 	}
 }
