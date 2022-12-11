@@ -163,16 +163,12 @@ func main() {
 	moves := ParseInput(inputFileName)
 
 	rope := InitMultiKnotRope(2)
-	for _, m := range *moves {
-		rope.MoveRope(m)
-	}
-
 	mkRope := InitMultiKnotRope(10)
 	for _, m := range *moves {
+		rope.MoveRope(m)
 		mkRope.MoveRope(m)
 	}
 
 	fmt.Println(rope.tailPositions.Size(), "Expected 6090 main, Expected 13 test, Expected 88 test 1")
-
 	fmt.Println(mkRope.tailPositions.Size(), "Expected 2566 main, Expected 1 test, Expected 36 test 1")
 }
