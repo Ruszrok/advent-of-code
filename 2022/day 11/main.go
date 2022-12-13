@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -40,9 +41,11 @@ type Test struct {
 	divisibleTestValue int
 	SuccessTarget      int
 	FailureTatget      int
+	ExecutionCount     int
 }
 
 func (t *Test) try(worryLevel int) int {
+	t.ExecutionCount++
 	if worryLevel%t.divisibleTestValue == 0 {
 		return t.SuccessTarget
 	}
@@ -51,11 +54,10 @@ func (t *Test) try(worryLevel int) int {
 }
 
 type Monkey struct {
-	number              string
-	items               []int
-	operation           *Operation
-	test                Test
-	inspectedItemsCount int
+	number    string
+	items     []int
+	operation *Operation
+	test      *Test
 }
 
 func ParseInput(pathToFile string) []*Monkey {
@@ -106,6 +108,39 @@ func ParseInput(pathToFile string) []*Monkey {
 			op.operationArgumentRight = parts[2]
 			m.operation = op
 		}
+
+		if strings.HasPrefix(line, "Test: divisible by ") {
+			l := line[len("Test: divisible by "):]
+			v, err := strconv.Atoi(l)
+			if err != nil {
+				panic(fmt.Sprintf("Error in parsing %s", l))
+			}
+
+			t := new(Test)
+			t.divisibleTestValue = v
+		}
+
+		if strings.HasPrefix(line, "    If false: throw to monkey ") {
+			l := line[len("    If false: throw to monkey "):]
+			v, err := strconv.Atoi(l)
+			if err != nil {
+				panic(fmt.Sprintf("Error in parsing %s", l))
+			}
+
+			t := new(Test)
+			t.SuccessTarget = v
+		}
+
+		if strings.HasPrefix(line, "    If false: throw to monkey ") {
+			l := line[len("    If false: throw to monkey "):]
+			v, err := strconv.Atoi(l)
+			if err != nil {
+				panic(fmt.Sprintf("Error in parsing %s", l))
+			}
+
+			t := new(Test)
+			t.FailureTatget = v
+		}
 	}
 
 	if m != nil {
@@ -113,6 +148,14 @@ func ParseInput(pathToFile string) []*Monkey {
 	}
 
 	return result
+}
+
+func dequeue(o []int) (int, []int) {
+	if len(o) == 1 {
+		return o[0], []int{}
+	}
+
+	return o[0], o[1:]
 }
 
 func main() {
@@ -124,6 +167,27 @@ func main() {
 		inputFileName = "input.txt"
 	}
 
-	operations := ParseInput(inputFileName)
+	monkeys := ParseInput(inputFileName)
 
+	maxCount := 20
+	for i := 0; i < maxCount; i++ {
+		for j := 0; j < len(monkeys); j++ {
+			m := monkeys[j]
+			item := -1
+			for len(m.items) > 0 {
+				item, m.items = dequeue(m.items)
+				nextlevel := m.operation.execute(item)
+				nextlevel /= 3
+				nextMonkey := m.test.try(nextlevel)
+				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
+			}
+		}
+	}
+
+	sort.Slice(monkeys, func(i, j int) bool {
+		return monkeys[i].test.ExecutionCount < monkeys[j].test.ExecutionCount
+	})
+
+	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
+	fmt.Println(power)
 }
