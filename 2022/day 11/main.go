@@ -130,8 +130,8 @@ func ParseInput(pathToFile string) []*Monkey {
 			m.test = t
 		}
 
-		if strings.HasPrefix(line, "    If false: throw to monkey ") {
-			l := line[len("    If false: throw to monkey "):]
+		if strings.HasPrefix(line, "    If true: throw to monkey ") {
+			l := line[len("    If true: throw to monkey "):]
 			v, err := strconv.Atoi(l)
 			if err != nil {
 				panic(fmt.Sprintf("Error in parsing %s", l))
@@ -178,7 +178,7 @@ func main() {
 
 	monkeys := ParseInput(inputFileName)
 
-	maxCount := 2
+	maxCount := 20
 	for i := 0; i < maxCount; i++ {
 		fmt.Printf("State before operation %d\n", i)
 		for i := 0; i < len(monkeys); i++ {
@@ -195,10 +195,6 @@ func main() {
 				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
 			}
 		}
-	}
-
-	for i := 0; i < len(monkeys); i++ {
-		fmt.Println(monkeys[i].test.ExecutionCount)
 	}
 
 	sort.Slice(monkeys, func(i, j int) bool {
