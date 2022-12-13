@@ -16,13 +16,15 @@ type Operation struct {
 	operationArgumentRight string
 }
 
-func (op *Operation) execute(oldValue int) int {
+func (op *Operation) execute(oldValue int64) int64 {
 	left, right := oldValue, oldValue
 	if op.operationArgumentLeft != "old" {
-		left, _ = strconv.Atoi(op.operationArgumentLeft)
+		left_i, _ := strconv.Atoi(op.operationArgumentLeft)
+		left = int64(left_i)
 	}
 	if op.operationArgumentRight != "old" {
-		right, _ = strconv.Atoi(op.operationArgumentRight)
+		right_i, _ := strconv.Atoi(op.operationArgumentRight)
+		right = int64(right_i)
 	}
 	switch op.opearationLiteral {
 	case "*":
@@ -44,9 +46,10 @@ type Test struct {
 	ExecutionCount     int
 }
 
-func (t *Test) try(worryLevel int) int {
+func (t *Test) try(worryLevel int64) int {
 	t.ExecutionCount++
-	if worryLevel%t.divisibleTestValue == 0 {
+	res := worryLevel / int64(t.divisibleTestValue)
+	if res*int64(t.divisibleTestValue) == worryLevel {
 		return t.SuccessTarget
 	}
 
@@ -55,7 +58,7 @@ func (t *Test) try(worryLevel int) int {
 
 type Monkey struct {
 	number    string
-	items     []int
+	items     []int64
 	operation *Operation
 	test      *Test
 }
@@ -86,7 +89,7 @@ func ParseInput(pathToFile string) []*Monkey {
 			}
 
 			m = new(Monkey)
-			m.items = *new([]int)
+			m.items = *new([]int64)
 
 			m.number = line[len("Monkey ") : len("Monkey ")+1]
 		}
@@ -99,7 +102,7 @@ func ParseInput(pathToFile string) []*Monkey {
 					panic(fmt.Sprintf("Error in items parsing %s", w))
 				}
 
-				m.items = append(m.items, v)
+				m.items = append(m.items, int64(v))
 			}
 		}
 
@@ -159,9 +162,9 @@ func ParseInput(pathToFile string) []*Monkey {
 	return result
 }
 
-func dequeue(o []int) (int, []int) {
+func dequeue(o []int64) (int64, []int64) {
 	if len(o) == 1 {
-		return o[0], []int{}
+		return o[0], []int64{}
 	}
 
 	return o[0], o[1:]
@@ -178,6 +181,17 @@ func main() {
 
 	monkeys := ParseInput(inputFileName)
 
+	solveSecondPart(monkeys)
+
+	sort.Slice(monkeys, func(i, j int) bool {
+		return monkeys[i].test.ExecutionCount > monkeys[j].test.ExecutionCount
+	})
+
+	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
+	fmt.Println(power)
+}
+
+func solveFirstPart(monkeys []*Monkey) {
 	maxCount := 20
 	for i := 0; i < maxCount; i++ {
 		fmt.Printf("State before operation %d\n", i)
@@ -186,7 +200,7 @@ func main() {
 		}
 		for j := 0; j < len(monkeys); j++ {
 			m := monkeys[j]
-			item := -1
+			item := int64(-1)
 			for len(m.items) > 0 {
 				item, m.items = dequeue(m.items)
 				nextlevel := m.operation.execute(item)
@@ -196,11 +210,20 @@ func main() {
 			}
 		}
 	}
+}
 
-	sort.Slice(monkeys, func(i, j int) bool {
-		return monkeys[i].test.ExecutionCount > monkeys[j].test.ExecutionCount
-	})
-
-	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
-	fmt.Println(power)
+func solveSecondPart(monkeys []*Monkey) {
+	maxCount := 10000
+	for i := 0; i < maxCount; i++ {
+		for j := 0; j < len(monkeys); j++ {
+			m := monkeys[j]
+			item := int64(-1)
+			for len(m.items) > 0 {
+				item, m.items = dequeue(m.items)
+				nextlevel := m.operation.execute(item)
+				nextMonkey := m.test.try(nextlevel)
+				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
+			}
+		}
+	}
 }
