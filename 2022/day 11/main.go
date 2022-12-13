@@ -22,7 +22,7 @@ func (op *Operation) execute(oldValue int) int {
 		left, _ = strconv.Atoi(op.operationArgumentLeft)
 	}
 	if op.operationArgumentRight != "old" {
-		right, _ = strconv.Atoi(op.operationArgumentLeft)
+		right, _ = strconv.Atoi(op.operationArgumentRight)
 	}
 	switch op.opearationLiteral {
 	case "*":
@@ -60,6 +60,12 @@ type Monkey struct {
 	test      *Test
 }
 
+func PreconditionTest(m *Monkey) {
+	if m == nil || m.items == nil || m.operation == nil || m.test == nil {
+		panic("Partial nil is nill")
+	}
+}
+
 func ParseInput(pathToFile string) []*Monkey {
 	f, err := os.Open(pathToFile)
 	if err != nil {
@@ -75,6 +81,7 @@ func ParseInput(pathToFile string) []*Monkey {
 		line := strings.Trim(scanner.Text(), "\n")
 		if strings.HasPrefix(line, "Monkey ") {
 			if m != nil {
+				PreconditionTest(m)
 				result = append(result, m)
 			}
 
@@ -83,8 +90,9 @@ func ParseInput(pathToFile string) []*Monkey {
 
 			m.number = line[len("Monkey ") : len("Monkey ")+1]
 		}
-		if strings.HasPrefix(line, "Starting items: ") {
-			l := line[len("Starting items: "):]
+
+		if strings.HasPrefix(line, "  Starting items: ") {
+			l := line[len("  Starting items: "):]
 			for _, w := range strings.Split(l, ", ") {
 				v, err := strconv.Atoi(w)
 				if err != nil {
@@ -95,8 +103,8 @@ func ParseInput(pathToFile string) []*Monkey {
 			}
 		}
 
-		if strings.HasPrefix(line, "Operation: new = ") {
-			l := line[len("Operation: new = "):]
+		if strings.HasPrefix(line, "  Operation: new = ") {
+			l := line[len("  Operation: new = "):]
 			parts := strings.Split(l, " ")
 			if len(parts) > 3 {
 				panic(fmt.Sprintf("Parsing error in operation %s", l))
@@ -109,8 +117,8 @@ func ParseInput(pathToFile string) []*Monkey {
 			m.operation = op
 		}
 
-		if strings.HasPrefix(line, "Test: divisible by ") {
-			l := line[len("Test: divisible by "):]
+		if strings.HasPrefix(line, "  Test: divisible by ") {
+			l := line[len("  Test: divisible by "):]
 			v, err := strconv.Atoi(l)
 			if err != nil {
 				panic(fmt.Sprintf("Error in parsing %s", l))
@@ -118,6 +126,8 @@ func ParseInput(pathToFile string) []*Monkey {
 
 			t := new(Test)
 			t.divisibleTestValue = v
+			t.ExecutionCount = 0
+			m.test = t
 		}
 
 		if strings.HasPrefix(line, "    If false: throw to monkey ") {
@@ -127,8 +137,7 @@ func ParseInput(pathToFile string) []*Monkey {
 				panic(fmt.Sprintf("Error in parsing %s", l))
 			}
 
-			t := new(Test)
-			t.SuccessTarget = v
+			m.test.SuccessTarget = v
 		}
 
 		if strings.HasPrefix(line, "    If false: throw to monkey ") {
@@ -138,12 +147,12 @@ func ParseInput(pathToFile string) []*Monkey {
 				panic(fmt.Sprintf("Error in parsing %s", l))
 			}
 
-			t := new(Test)
-			t.FailureTatget = v
+			m.test.FailureTatget = v
 		}
 	}
 
 	if m != nil {
+		PreconditionTest(m)
 		result = append(result, m)
 	}
 
@@ -169,8 +178,12 @@ func main() {
 
 	monkeys := ParseInput(inputFileName)
 
-	maxCount := 20
+	maxCount := 2
 	for i := 0; i < maxCount; i++ {
+		fmt.Printf("State before operation %d\n", i)
+		for i := 0; i < len(monkeys); i++ {
+			fmt.Println(monkeys[i].items)
+		}
 		for j := 0; j < len(monkeys); j++ {
 			m := monkeys[j]
 			item := -1
@@ -184,8 +197,12 @@ func main() {
 		}
 	}
 
+	for i := 0; i < len(monkeys); i++ {
+		fmt.Println(monkeys[i].test.ExecutionCount)
+	}
+
 	sort.Slice(monkeys, func(i, j int) bool {
-		return monkeys[i].test.ExecutionCount < monkeys[j].test.ExecutionCount
+		return monkeys[i].test.ExecutionCount > monkeys[j].test.ExecutionCount
 	})
 
 	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
