@@ -212,6 +212,7 @@ func main() {
 			item := -1
 			for len(m.items) > 0 {
 				item, m.items = dequeue(m.items)
+				//nextlevel := firstPuzzleSolver(m, item)
 				nextlevel := secondPuzzleSolver(m, item, divider)
 				nextMonkey := m.test.do(nextlevel)
 				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
