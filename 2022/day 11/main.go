@@ -10,21 +10,44 @@ import (
 	"strings"
 )
 
+const (
+	DEFAUL_OP_ARG = -10000
+)
+
 type Operation struct {
-	opearationLiteral      string
-	operationArgumentLeft  string
-	operationArgumentRight string
+	literal   string
+	sArgLeft  string
+	sArgRight string
+	opLeft    int
+	opRight   int
+}
+
+func NewOperation(literal, argLeft, argRight string) *Operation {
+	op := new(Operation)
+	op.literal = literal
+	op.sArgLeft = argLeft
+	op.sArgRight = argRight
+	op.opLeft, op.opRight = DEFAUL_OP_ARG, DEFAUL_OP_ARG
+	if op.sArgLeft != "old" {
+		op.opLeft, _ = strconv.Atoi(op.sArgLeft)
+	}
+	if op.sArgRight != "old" {
+		op.opRight, _ = strconv.Atoi(op.sArgRight)
+	}
+
+	return op
 }
 
 func (op *Operation) execute(oldValue int) int {
 	left, right := oldValue, oldValue
-	if op.operationArgumentLeft != "old" {
-		left, _ = strconv.Atoi(op.operationArgumentLeft)
+	if op.opLeft != DEFAUL_OP_ARG {
+		left = op.opLeft
 	}
-	if op.operationArgumentRight != "old" {
-		right, _ = strconv.Atoi(op.operationArgumentRight)
+	if op.opRight != DEFAUL_OP_ARG {
+		right = op.opRight
 	}
-	switch op.opearationLiteral {
+
+	switch op.literal {
 	case "*":
 		return left * right
 	case "+":
@@ -39,18 +62,18 @@ func (op *Operation) execute(oldValue int) int {
 
 type Test struct {
 	divider        int
-	SuccessTarget  int
-	FailureTatget  int
-	ExecutionCount int
+	successTraget  int
+	failureTatget  int
+	executionCount int
 }
 
-func (t *Test) try(worryLevel int) int {
-	t.ExecutionCount++
+func (t *Test) do(worryLevel int) int {
+	t.executionCount++
 	if worryLevel%t.divider == 0 {
-		return t.SuccessTarget
+		return t.successTraget
 	}
 
-	return t.FailureTatget
+	return t.failureTatget
 }
 
 type Monkey struct {
@@ -110,11 +133,7 @@ func ParseInput(pathToFile string) []*Monkey {
 				panic(fmt.Sprintf("Parsing error in operation %s", l))
 			}
 
-			op := new(Operation)
-			op.operationArgumentLeft = parts[0]
-			op.opearationLiteral = parts[1]
-			op.operationArgumentRight = parts[2]
-			m.operation = op
+			m.operation = NewOperation(parts[1], parts[0], parts[2])
 		}
 
 		if strings.HasPrefix(line, "  Test: divisible by ") {
@@ -126,7 +145,7 @@ func ParseInput(pathToFile string) []*Monkey {
 
 			t := new(Test)
 			t.divider = v
-			t.ExecutionCount = 0
+			t.executionCount = 0
 			m.test = t
 		}
 
@@ -137,7 +156,7 @@ func ParseInput(pathToFile string) []*Monkey {
 				panic(fmt.Sprintf("Error in parsing %s", l))
 			}
 
-			m.test.SuccessTarget = v
+			m.test.successTraget = v
 		}
 
 		if strings.HasPrefix(line, "    If false: throw to monkey ") {
@@ -147,7 +166,7 @@ func ParseInput(pathToFile string) []*Monkey {
 				panic(fmt.Sprintf("Error in parsing %s", l))
 			}
 
-			m.test.FailureTatget = v
+			m.test.failureTatget = v
 		}
 	}
 
@@ -194,7 +213,7 @@ func main() {
 			for len(m.items) > 0 {
 				item, m.items = dequeue(m.items)
 				nextlevel := secondPuzzleSolver(m, item, divider)
-				nextMonkey := m.test.try(nextlevel)
+				nextMonkey := m.test.do(nextlevel)
 				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
 			}
 		}
@@ -202,10 +221,10 @@ func main() {
 	PrintOnIteration(monkeys, maxCount)
 
 	sort.Slice(monkeys, func(i, j int) bool {
-		return monkeys[i].test.ExecutionCount > monkeys[j].test.ExecutionCount
+		return monkeys[i].test.executionCount > monkeys[j].test.executionCount
 	})
 
-	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
+	power := monkeys[0].test.executionCount * monkeys[1].test.executionCount
 	fmt.Println(power)
 }
 
@@ -224,7 +243,7 @@ func PrintOnIteration(monkeys []*Monkey, j int) {
 	}
 	fmt.Printf("State before operation %d\n", j)
 	for i := 0; i < len(monkeys); i++ {
-		fmt.Printf("Monkey %d inspected %d items\n", i, monkeys[i].test.ExecutionCount)
+		fmt.Printf("Monkey %d inspected %d items\n", i, monkeys[i].test.executionCount)
 	}
 }
 
