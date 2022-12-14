@@ -12,7 +12,7 @@ const (
 	UNREACHABLE = 100000000000
 )
 
-type Coords [2]int
+type Coords []int
 type GridRow []rune
 type Grid []GridRow
 
@@ -26,8 +26,8 @@ func ParseInput(pathToFile string) (Grid, Coords, Coords) {
 	scanner := bufio.NewScanner(f)
 
 	result := Grid{}
-	start := Coords{}
-	end := Coords{}
+	start := Coords{-1, -1}
+	end := Coords{-1, -1}
 	for scanner.Scan() {
 		line := strings.Trim(scanner.Text(), "\n")
 		result = append(result, GridRow(line))
@@ -104,17 +104,22 @@ func dequeue(o []Coords) (Coords, []Coords) {
 	return o[0], o[1:]
 }
 
+func code(s Coords) int {
+	return s[0]*100000 + s[1]
+}
+
 func findPath(grid Grid, s, e Coords) int {
-	distances := map[Coords]int{}
-	distances[s] = 0
+	distances := map[int]int{}
+	distances[code(s)] = 0
 	queue := []Coords{s}
 	cur := s
 
 	for len(queue) > 0 {
-		_, ok := distances[e]
+		_, ok := distances[code(e)]
 		if ok {
 			break
 		}
+
 		cur, queue = dequeue(queue)
 		if grid.CanDownFromPoint(cur) {
 			p := Coords{cur[0], cur[1] - 1}
@@ -137,14 +142,25 @@ func findPath(grid Grid, s, e Coords) int {
 		}
 	}
 
-	return distances[e]
+	fmt.Println(distances)
+	return distances[code(e)]
 }
 
-func enqueueIfNeeded(distances map[Coords]int, p Coords, cur Coords, queue []Coords) []Coords {
-	v, ok := distances[p]
-	if !ok || v >= distances[cur]+1 {
-		distances[p] = distances[cur] + 1
-		queue = append(queue, p)
+func enqueueIfNeeded(distances map[int]int, p Coords, cur Coords, queue []Coords) []Coords {
+	v, ok := distances[code(p)]
+	if !ok || v >= distances[code(cur)]+1 {
+		distances[code(p)] = distances[code(cur)] + 1
+
+		found := false
+		for i := 0; i < len(queue); i++ {
+			if queue[i].Equals(p) {
+				found = true
+			}
+		}
+
+		if !found {
+			queue = append(queue, p)
+		}
 	}
 	return queue
 }
@@ -159,6 +175,7 @@ func main() {
 	}
 
 	grid, start, end := ParseInput(inputFileName)
+	fmt.Println("Start and end: ", start, end)
 	steps := findPath(grid, start, end)
 	fmt.Println("Mimimal steps count: ", steps)
 }
