@@ -116,23 +116,23 @@ func findPath(grid Grid, s, e Coords) int {
 			break
 		}
 		cur, queue = dequeue(queue)
-		if grid.CanDownFromPoint(s) {
-			p := Coords{s[0], s[1] - 1}
+		if grid.CanDownFromPoint(cur) {
+			p := Coords{cur[0], cur[1] - 1}
 			queue = enqueueIfNeeded(distances, p, cur, queue)
 		}
 
-		if grid.CanUpFromPoint(s) {
-			p := Coords{s[0], s[1] + 1}
+		if grid.CanUpFromPoint(cur) {
+			p := Coords{cur[0], cur[1] + 1}
 			queue = enqueueIfNeeded(distances, p, cur, queue)
 		}
 
-		if grid.CanLeftFromPoint(s) {
-			p := Coords{s[0] - 1, s[1]}
+		if grid.CanLeftFromPoint(cur) {
+			p := Coords{cur[0] - 1, cur[1]}
 			queue = enqueueIfNeeded(distances, p, cur, queue)
 		}
 
-		if grid.CanRightFromPoint(s) {
-			p := Coords{s[0] + 1, s[1]}
+		if grid.CanRightFromPoint(cur) {
+			p := Coords{cur[0] + 1, cur[1]}
 			queue = enqueueIfNeeded(distances, p, cur, queue)
 		}
 	}
@@ -142,7 +142,7 @@ func findPath(grid Grid, s, e Coords) int {
 
 func enqueueIfNeeded(distances map[Coords]int, p Coords, cur Coords, queue []Coords) []Coords {
 	v, ok := distances[p]
-	if !ok || v > distances[cur]+1 {
+	if !ok || v >= distances[cur]+1 {
 		distances[p] = distances[cur] + 1
 		queue = append(queue, p)
 	}
