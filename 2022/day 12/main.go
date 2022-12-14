@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	UNREACHABLE = -10000
+	UNREACHABLE = 100000000000
 )
 
 type Coords [2]int
@@ -96,42 +96,64 @@ func (g Grid) CanUpFromPoint(p Coords) bool {
 	return canMove(val)
 }
 
-func findPath(grid Grid, s, e Coords) int {
-	if s.Equals(e) {
-		return 0
+func dequeue(o []Coords) (Coords, []Coords) {
+	if len(o) == 1 {
+		return o[0], []Coords{}
 	}
 
-	res := [4]int{UNREACHABLE, UNREACHABLE, UNREACHABLE, UNREACHABLE}
-
-	if grid.CanDownFromPoint(s) {
-		res[0] = 1 + findPath(grid, Coords{s[0], s[1] - 1}, e)
-	}
-
-	if grid.CanUpFromPoint(s) {
-		res[1] = 1 + findPath(grid, Coords{s[0], s[1] + 1}, e)
-	}
-
-	if grid.CanLeftFromPoint(s) {
-		res[2] = 1 + findPath(grid, Coords{s[0] - 1, s[1]}, e)
-	}
-
-	if grid.CanRightFromPoint(s) {
-		res[3] = 1 + findPath(grid, Coords{s[0] + 1, s[1]}, e)
-	}
-
-	fmt.Println(res, s)
-	return smartSmallest(res)
+	return o[0], o[1:]
 }
 
-func smartSmallest(res [4]int) int {
+func findPath(grid Grid, s, e Coords) int {
+	distances := map[Coords]int{}
+	distances[s] = 0
+	queue := []Coords{s}
+	cur := s
+
+	for len(queue) > 0 {
+		_, ok := distances[e]
+		if ok {
+			break
+		}
+		cur, queue = dequeue(queue)
+		if grid.CanDownFromPoint(s) {
+			p := Coords{s[0], s[1] - 1}
+			queue = enqueueIfNeeded(distances, p, cur, queue)
+		}
+
+		if grid.CanUpFromPoint(s) {
+			p := Coords{s[0], s[1] + 1}
+			queue = enqueueIfNeeded(distances, p, cur, queue)
+		}
+
+		if grid.CanLeftFromPoint(s) {
+			p := Coords{s[0] - 1, s[1]}
+			queue = enqueueIfNeeded(distances, p, cur, queue)
+		}
+
+		if grid.CanRightFromPoint(s) {
+			p := Coords{s[0] + 1, s[1]}
+			queue = enqueueIfNeeded(distances, p, cur, queue)
+		}
+	}
+
+	return distances[e]
+}
+
+func enqueueIfNeeded(distances map[Coords]int, p Coords, cur Coords, queue []Coords) []Coords {
+	v, ok := distances[p]
+	if !ok || v > distances[cur]+1 {
+		distances[p] = distances[cur] + 1
+		queue = append(queue, p)
+	}
+	return queue
+}
+
+func smallest(res [4]int) int {
 	smallestNumber := UNREACHABLE
 
 	for _, e := range res {
-		if smallestNumber == UNREACHABLE {
-			smallestNumber = e
-		}
-
-		if e != UNREACHABLE && e < smallestNumber {
+		if e < smallestNumber {
 			smallestNumber = e
 		}
 	}
