@@ -57,7 +57,7 @@ func (g Grid) value(p Coords) rune {
 }
 
 func canMove(a rune) bool {
-	return a <= 1 && a >= 0
+	return a == 0 || a == 1
 }
 
 func (g Grid) CanLeftFromPoint(p Coords) bool {
@@ -171,7 +171,6 @@ func main() {
 	}
 
 	grid, start, end := ParseInput(inputFileName)
-	fmt.Println(grid)
 	steps := findPath(grid, start, end)
 	fmt.Println("Mimimal steps count: ", steps)
 }
