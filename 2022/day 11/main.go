@@ -38,15 +38,15 @@ func (op *Operation) execute(oldValue int) int {
 }
 
 type Test struct {
-	divisibleTestValue int
-	SuccessTarget      int
-	FailureTatget      int
-	ExecutionCount     int
+	divider        int
+	SuccessTarget  int
+	FailureTatget  int
+	ExecutionCount int
 }
 
 func (t *Test) try(worryLevel int) int {
 	t.ExecutionCount++
-	if worryLevel%t.divisibleTestValue == 0 {
+	if worryLevel%t.divider == 0 {
 		return t.SuccessTarget
 	}
 
@@ -125,7 +125,7 @@ func ParseInput(pathToFile string) []*Monkey {
 			}
 
 			t := new(Test)
-			t.divisibleTestValue = v
+			t.divider = v
 			t.ExecutionCount = 0
 			m.test = t
 		}
@@ -178,24 +178,28 @@ func main() {
 
 	monkeys := ParseInput(inputFileName)
 
-	maxCount := 20
+	// maxCount := 20
+	//For 2nd part
+	maxCount := 10000
+	divider := 1
+	for i := 0; i < len(monkeys); i++ {
+		divider *= monkeys[i].test.divider
+	}
+
 	for i := 0; i < maxCount; i++ {
-		fmt.Printf("State before operation %d\n", i)
-		for i := 0; i < len(monkeys); i++ {
-			fmt.Println(monkeys[i].items)
-		}
+		PrintOnIteration(monkeys, i)
 		for j := 0; j < len(monkeys); j++ {
 			m := monkeys[j]
 			item := -1
 			for len(m.items) > 0 {
 				item, m.items = dequeue(m.items)
-				nextlevel := m.operation.execute(item)
-				nextlevel /= 3
+				nextlevel := secondPuzzleSolver(m, item, divider)
 				nextMonkey := m.test.try(nextlevel)
 				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, nextlevel)
 			}
 		}
 	}
+	PrintOnIteration(monkeys, maxCount)
 
 	sort.Slice(monkeys, func(i, j int) bool {
 		return monkeys[i].test.ExecutionCount > monkeys[j].test.ExecutionCount
@@ -203,4 +207,34 @@ func main() {
 
 	power := monkeys[0].test.ExecutionCount * monkeys[1].test.ExecutionCount
 	fmt.Println(power)
+}
+
+func PrintOnIteration(monkeys []*Monkey, j int) {
+	printable := []int{1, 20, 100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000}
+	found := false
+	for _, v := range printable {
+		if v == j {
+			found = true
+			break
+		}
+	}
+
+	if found == false {
+		return
+	}
+	fmt.Printf("State before operation %d\n", j)
+	for i := 0; i < len(monkeys); i++ {
+		fmt.Printf("Monkey %d inspected %d items\n", i, monkeys[i].test.ExecutionCount)
+	}
+}
+
+func firstPuzzleSolver(m *Monkey, item int) int {
+	nextlevel := m.operation.execute(item)
+	nextlevel /= 3
+	return nextlevel
+}
+
+func secondPuzzleSolver(m *Monkey, item, divider int) int {
+	nextlevel := m.operation.execute(item) % divider
+	return nextlevel
 }
