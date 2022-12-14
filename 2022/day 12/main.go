@@ -35,10 +35,12 @@ func ParseInput(pathToFile string) (Grid, Coords, Coords) {
 			if line[i] == 'S' {
 				start[0] = i
 				start[1] = len(result) - 1
+				result[len(result)-1][i] = 96
 			}
 			if line[i] == 'E' {
 				end[0] = i
 				end[1] = len(result) - 1
+				result[len(result)-1][i] = 123
 			}
 		}
 	}
@@ -117,6 +119,7 @@ func findPath(grid Grid, s, e Coords) int {
 		res[3] = 1 + findPath(grid, Coords{s[0] + 1, s[1]}, e)
 	}
 
+	fmt.Println(res, s)
 	return smartSmallest(res)
 }
 
@@ -146,7 +149,7 @@ func main() {
 	}
 
 	grid, start, end := ParseInput(inputFileName)
-
+	fmt.Println(grid)
 	steps := findPath(grid, start, end)
 	fmt.Println("Mimimal steps count: ", steps)
 }
