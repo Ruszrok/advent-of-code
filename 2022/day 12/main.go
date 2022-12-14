@@ -149,18 +149,6 @@ func enqueueIfNeeded(distances map[Coords]int, p Coords, cur Coords, queue []Coo
 	return queue
 }
 
-func smallest(res [4]int) int {
-	smallestNumber := UNREACHABLE
-
-	for _, e := range res {
-		if e < smallestNumber {
-			smallestNumber = e
-		}
-	}
-
-	return smallestNumber
-}
-
 func main() {
 	isTestFile := false
 	flag.BoolVar(&isTestFile, "t", false, "display in uppercase")
