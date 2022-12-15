@@ -173,4 +173,19 @@ func main() {
 	fmt.Println("Start and end: ", start, end)
 	steps := findPath(grid, start, end)
 	fmt.Println("Mimimal steps count: ", steps)
+
+	fmt.Println("Started best start lookup")
+	minSteps := steps
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			if grid[i][j] == rune('a') {
+				s := findPath(grid, Coords{j, i}, end)
+				if s < minSteps && s != 0 {
+					minSteps = s
+				}
+			}
+
+		}
+	}
+	fmt.Println("Best mimimal steps count: ", minSteps)
 }
