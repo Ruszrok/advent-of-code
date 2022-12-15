@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	UNREACHABLE = 100000000000
-)
-
 type Coords []int
 type GridRow []rune
 type Grid []GridRow
@@ -57,7 +53,7 @@ func (g Grid) value(p Coords) rune {
 }
 
 func canMove(a rune) bool {
-	return a == 0 || a == 1
+	return a <= 1
 }
 
 func (g Grid) CanLeftFromPoint(p Coords) bool {
@@ -104,18 +100,18 @@ func dequeue(o []Coords) (Coords, []Coords) {
 	return o[0], o[1:]
 }
 
-func code(s Coords) int {
+func hash(s Coords) int {
 	return s[0]*100000 + s[1]
 }
 
 func findPath(grid Grid, s, e Coords) int {
 	distances := map[int]int{}
-	distances[code(s)] = 0
+	distances[hash(s)] = 0
 	queue := []Coords{s}
 	cur := s
 
 	for len(queue) > 0 {
-		_, ok := distances[code(e)]
+		_, ok := distances[hash(e)]
 		if ok {
 			break
 		}
@@ -142,14 +138,13 @@ func findPath(grid Grid, s, e Coords) int {
 		}
 	}
 
-	fmt.Println(distances)
-	return distances[code(e)]
+	return distances[hash(e)]
 }
 
 func enqueueIfNeeded(distances map[int]int, p Coords, cur Coords, queue []Coords) []Coords {
-	v, ok := distances[code(p)]
-	if !ok || v >= distances[code(cur)]+1 {
-		distances[code(p)] = distances[code(cur)] + 1
+	v, ok := distances[hash(p)]
+	if !ok || v >= distances[hash(cur)]+1 {
+		distances[hash(p)] = distances[hash(cur)] + 1
 
 		found := false
 		for i := 0; i < len(queue); i++ {
