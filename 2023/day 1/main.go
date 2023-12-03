@@ -25,19 +25,19 @@ func ParseInput(pathToFile string) []string {
 	return result
 }
 
-func getNumberFromSpelling(s string, index int) (bool, int) {
-	numberMap := map[string]int{
-		"one":   1,
-		"two":   2,
-		"three": 3,
-		"four":  4,
-		"five":  5,
-		"six":   6,
-		"seven": 7,
-		"eight": 8,
-		"nine":  9,
-	}
+var numberMap = map[string]int{
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
 
+func getNumberFromSpelling(s string, index int) (bool, int) {
 	for i := 5; i >= 3; i-- {
 		if index+i <= len(s) {
 			v, exists := numberMap[s[index:index+i]]
