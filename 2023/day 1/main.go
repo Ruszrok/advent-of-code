@@ -16,13 +16,38 @@ func ParseInput(pathToFile string) []string {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	result := []string{}
+	var result []string
 	for scanner.Scan() {
 		line := strings.Trim(scanner.Text(), "\n")
 		result = append(result, line)
 	}
 
 	return result
+}
+
+func getNumberFromSpelling(s string, index int) (bool, int) {
+	numberMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+		"four":  4,
+		"five":  5,
+		"six":   6,
+		"seven": 7,
+		"eight": 8,
+		"nine":  9,
+	}
+
+	for i := 5; i >= 3; i-- {
+		if index+i <= len(s) {
+			v, exists := numberMap[s[index:index+i]]
+			if exists {
+				return true, v
+			}
+		}
+	}
+
+	return false, 0
 }
 
 func main() {
@@ -43,14 +68,21 @@ func main() {
 	answer := 0
 
 	for _, s := range input {
-		nums := []int{}
-		for _, ch := range s {
+		var nums []int
+		for i := 0; i < len(s); i++ {
+			ch := s[i]
 			if ch >= '0' && ch <= '9' {
 				nums = append(nums, int(ch-'0'))
+			}
+
+			var m, val = getNumberFromSpelling(s, i)
+			if m {
+				nums = append(nums, val)
 			}
 		}
 		answer += nums[0]*10 + nums[len(nums)-1]
 	}
 
-	fmt.Println("Sum of codes: ", answer, 55090)
+	//fmt.Println("Sum of codes: ", answer, 55090)
+	fmt.Println("Sum of codes: ", answer, 54845)
 }
