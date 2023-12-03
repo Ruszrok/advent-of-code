@@ -68,13 +68,14 @@ func main() {
 	}
 
 	input := ParseInput(inputFileName)
-	//println(len(input))
-	//for i := range input {
-	//	fmt.Printf("%v", input[i])
-	//}
-	answer := 0
-	cubeCombination := []int{12, 13, 14} //red, green, blue
+	var answer1 = 0
+	var answer2 = 0
+	var cubeCombination = [3]int{}
+	cubeCombination[col["red"]] = 12
+	cubeCombination[col["green"]] = 13
+	cubeCombination[col["blue"]] = 14
 
+	//game 1
 	for i, s := range input {
 		gamePossible := true
 		for _, nums := range s {
@@ -85,9 +86,29 @@ func main() {
 		}
 
 		if gamePossible {
-			answer += i + 1
+			answer1 += i + 1
 		}
 	}
 
-	fmt.Println("Sum of games: ", answer, 8)
+	//game 2
+	for _, s := range input {
+		maxState := [3]int{0, 0, 0}
+		for _, nums := range s {
+			maxState[0] = max(maxState[0], nums[0])
+			maxState[1] = max(maxState[1], nums[1])
+			maxState[2] = max(maxState[2], nums[2])
+		}
+
+		answer2 += maxState[0] * maxState[1] * maxState[2]
+	}
+
+	fmt.Println("Sum of games: ", answer1, 2617)
+	fmt.Println("Sum of games: ", answer2, 59795)
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
