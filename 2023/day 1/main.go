@@ -69,8 +69,7 @@ func main() {
 
 	for _, s := range input {
 		var nums []int
-		for i := 0; i < len(s); i++ {
-			ch := s[i]
+		for i, ch := range s {
 			if ch >= '0' && ch <= '9' {
 				nums = append(nums, int(ch-'0'))
 			}
