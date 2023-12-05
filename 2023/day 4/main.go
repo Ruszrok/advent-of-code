@@ -30,17 +30,12 @@ func ParseInput(pathToFile string) []*Card {
 	var result []*Card
 	for scanner.Scan() {
 		line := strings.Trim(scanner.Text(), "\n")
-		colonIndex := strings.Index(line, ":")
-		line = line[colonIndex+1:]
-		line = strings.Trim(line, " ")
-		split := strings.Split(line, "|")
+		delimiter := func(r rune) bool {
+			return r == '|' || r == ':'
+		}
+		splits := strings.FieldsFunc(line, delimiter)
 		var winNumbers []int
-		winSplit := strings.Split(split[0], " ")
-		for _, s := range winSplit {
-			if s == "" {
-				continue
-			}
-			s = strings.Trim(s, " ")
+		for _, s := range strings.Fields(splits[1]) {
 			v, err := strconv.Atoi(s)
 			if err != nil {
 				panic(fmt.Sprintf("Error while parsing string %s", s))
@@ -48,13 +43,8 @@ func ParseInput(pathToFile string) []*Card {
 			winNumbers = append(winNumbers, v)
 		}
 		var actualNumber []int
-		actualSplit := strings.Split(split[1], " ")
-		for _, s := range actualSplit {
-			if s == "" {
-				continue
-			}
-			s = strings.Trim(s, " ")
-			v, err := strconv.Atoi(s)
+		for _, s := range strings.Fields(splits[2]) {
+			v, err := strconv.Atoi(string(s))
 			if err != nil {
 				panic(fmt.Sprintf("Error while parsing string %s", s))
 			}
