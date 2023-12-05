@@ -43,35 +43,31 @@ func main() {
 	input := ParseInput(inputFileName)
 	var answer1 = 0
 	//var answer2 = 0
-	var usedRunes = map[int]bool{}
 
 	//game 1
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
-			code := encode(i, j)
-			if !usedRunes[code] {
-				ch := input[i][j]
-				if isNumber(ch) {
-					usedRunes[code] = true
-					numString := string(ch)
-					k := j + 1
-					for ; k < len(input[i]); k++ {
-						ch2 := input[i][k]
-						if !isNumber(ch2) {
-							break
-						}
-						numString += string(ch2)
-						usedRunes[encode(i, k)] = true
+			ch := input[i][j]
+			if isNumber(ch) {
+				numString := string(ch)
+				k := j + 1
+				for ; k < len(input[i]); k++ {
+					ch2 := input[i][k]
+					if !isNumber(ch2) {
+						break
 					}
-
-					if isPartNumber(input, i, j, k-1) {
-						v, err := strconv.Atoi(numString)
-						if err != nil {
-							panic(fmt.Sprintf("Error while parsing string %s", numString))
-						}
-						answer1 += v
-					}
+					numString += string(ch2)
 				}
+
+				if isPartNumber(input, i, j, k-1) {
+					v, err := strconv.Atoi(numString)
+					if err != nil {
+						panic(fmt.Sprintf("Error while parsing string %s", numString))
+					}
+					answer1 += v
+				}
+
+				j = k - 1
 			}
 		}
 	}
@@ -136,8 +132,4 @@ func isNotNumberOrDot(ch rune) bool {
 
 func isNumber(ch rune) bool {
 	return ch >= '0' && ch <= '9'
-}
-
-func encode(i, j int) int {
-	return i*1000 + j
 }
