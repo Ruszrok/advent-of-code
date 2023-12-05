@@ -85,6 +85,7 @@ func main() {
 	var answer1 = 0
 	var answer2 = 0
 
+	var matchesCount []int
 	//game 1
 	for i := 0; i < len(input); i++ {
 		wN := input[i].winNumbers
@@ -116,23 +117,28 @@ func main() {
 		if matches > 0 {
 			answer1 += pow2(matches - 1)
 		}
+
+		matchesCount = append(matchesCount, matches)
 	}
 
-	////game 2
-	//for i := 0; i < len(input); i++ {
-	//	for j := 0; j < len(input[i]); j++ {
-	//		if input[i][j] == '*' {
-	//			var closeParts = getClosesParts(partPositions, i, j)
-	//			if len(closeParts) == 2 {
-	//				answer2 += closeParts[0].value * closeParts[1].value
-	//			}
-	//		}
-	//	}
-	//}
+	scratches := make([]int, len(matchesCount))
+	//game 2
+	for i := 0; i < len(matchesCount); i++ {
+		scratches[i]++
+		if matchesCount[i] > 0 {
+			for j := i + 1; j <= i+matchesCount[i]; j++ {
+				scratches[j] += scratches[i]
+			}
+		}
+	}
+	for _, s := range scratches {
+		answer2 += s
+	}
 
 	fmt.Println("Sum of games: ", answer1, 21138)
-	fmt.Println("Sum of games: ", answer2, 467835)
+	fmt.Println("Sum of games: ", answer2, 30)
 }
+
 func pow2(n int) int {
 	a := 1
 	for i := 0; i < n; i++ {
