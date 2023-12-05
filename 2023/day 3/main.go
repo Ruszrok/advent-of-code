@@ -54,8 +54,9 @@ func main() {
 
 	input := ParseInput(inputFileName)
 	var answer1 = 0
-	//var answer2 = 0
+	var answer2 = 0
 	var partPositions []*PartPosition
+
 	//game 1
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
@@ -88,19 +89,31 @@ func main() {
 	}
 
 	////game 2
-	//for _, s := range input {
-	//	maxState := [3]int{0, 0, 0}
-	//	for _, nums := range s {
-	//		maxState[0] = max(maxState[0], nums[0])
-	//		maxState[1] = max(maxState[1], nums[1])
-	//		maxState[2] = max(maxState[2], nums[2])
-	//	}
-	//
-	//	answer2 += maxState[0] * maxState[1] * maxState[2]
-	//}
+	for i := 0; i < len(input); i++ {
+		for j := 0; j < len(input[i]); j++ {
+			if input[i][j] == '*' {
+				var closeParts = getClosesParts(partPositions, i, j)
+				if len(closeParts) == 2 {
+					answer2 += closeParts[0].value * closeParts[1].value
+				}
+			}
+		}
+	}
 
 	fmt.Println("Sum of games: ", answer1, 520135)
-	//fmt.Println("Sum of games: ", answer2, 59795)
+	fmt.Println("Sum of games: ", answer2, 467835)
+}
+
+func getClosesParts(parts []*PartPosition, row, col int) []*PartPosition {
+	var result []*PartPosition
+	for _, p := range parts {
+		if p.row >= row-1 && p.row <= row+1 {
+			if p.end >= col-1 && p.start <= col+1 {
+				result = append(result, p)
+			}
+		}
+	}
+	return result
 }
 
 func isPartNumber(in [][]rune, pp *PartPosition) bool {
