@@ -103,12 +103,12 @@ func main() {
 				break
 			}
 
-			println(aN[j], wN[winPosition])
 			if aN[j] > wN[winPosition] {
 				winPosition++
 				j--
 				continue
 			}
+
 			if aN[j] == wN[winPosition] {
 				matches++
 			}
@@ -130,7 +130,7 @@ func main() {
 	//	}
 	//}
 
-	fmt.Println("Sum of games: ", answer1, 13)
+	fmt.Println("Sum of games: ", answer1, 21138)
 	fmt.Println("Sum of games: ", answer2, 467835)
 }
 func pow2(n int) int {
