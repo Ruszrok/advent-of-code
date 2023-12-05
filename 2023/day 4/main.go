@@ -19,6 +19,7 @@ func newCard(w, a []int) *Card {
 	p := Card{winNumbers: w, actualNumbers: a}
 	return &p
 }
+
 func ParseInput(pathToFile string) []*Card {
 	f, err := os.Open(pathToFile)
 	if err != nil {
