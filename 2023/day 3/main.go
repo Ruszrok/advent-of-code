@@ -30,6 +30,7 @@ type PartPosition struct {
 	row   int
 	start int
 	end   int
+	value int
 }
 
 func newPartPosition(r, s, e int) *PartPosition {
@@ -77,7 +78,8 @@ func main() {
 					if err != nil {
 						panic(fmt.Sprintf("Error while parsing string %s", numString))
 					}
-					answer1 += v
+					pp.value = v
+					answer1 += pp.value
 				}
 
 				j = k - 1
