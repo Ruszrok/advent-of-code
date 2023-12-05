@@ -26,6 +26,17 @@ func ParseInput(pathToFile string) [][]rune {
 	return result
 }
 
+type PartPosition struct {
+	row   int
+	start int
+	end   int
+}
+
+func newPartPosition(r, s, e int) *PartPosition {
+	p := PartPosition{row: r, start: s, end: e}
+	return &p
+}
+
 func main() {
 	isTestFile := false
 	isTest2File := false
@@ -43,7 +54,7 @@ func main() {
 	input := ParseInput(inputFileName)
 	var answer1 = 0
 	//var answer2 = 0
-
+	var partPositions []*PartPosition
 	//game 1
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
@@ -59,7 +70,9 @@ func main() {
 					numString += string(ch2)
 				}
 
-				if isPartNumber(input, i, j, k-1) {
+				pp := newPartPosition(i, j, k-1)
+				if isPartNumber(input, pp) {
+					partPositions = append(partPositions, pp)
 					v, err := strconv.Atoi(numString)
 					if err != nil {
 						panic(fmt.Sprintf("Error while parsing string %s", numString))
@@ -88,36 +101,36 @@ func main() {
 	//fmt.Println("Sum of games: ", answer2, 59795)
 }
 
-func isPartNumber(in [][]rune, i, start, end int) bool {
-	s := start
-	e := end
-	if start > 0 {
-		s = start - 1
+func isPartNumber(in [][]rune, pp *PartPosition) bool {
+	s := pp.start
+	e := pp.end
+	if pp.start > 0 {
+		s = pp.start - 1
 	}
 
-	if end < len(in[i])-1 {
-		e = end + 1
+	if pp.end < len(in[pp.row])-1 {
+		e = pp.end + 1
 	}
 
-	if isNotNumberOrDot(in[i][s]) {
+	if isNotNumberOrDot(in[pp.row][s]) {
 		return true
 	}
 
-	if isNotNumberOrDot(in[i][e]) {
+	if isNotNumberOrDot(in[pp.row][e]) {
 		return true
 	}
 
-	if i > 0 {
+	if pp.row > 0 {
 		for j := s; j <= e; j++ {
-			if isNotNumberOrDot(in[i-1][j]) {
+			if isNotNumberOrDot(in[pp.row-1][j]) {
 				return true
 			}
 		}
 	}
 
-	if i < len(in)-1 {
+	if pp.row < len(in)-1 {
 		for j := s; j <= e; j++ {
-			if isNotNumberOrDot(in[i+1][j]) {
+			if isNotNumberOrDot(in[pp.row+1][j]) {
 				return true
 			}
 		}
