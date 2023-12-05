@@ -115,7 +115,7 @@ func main() {
 			}
 		}
 		if matches > 0 {
-			answer1 += pow2(matches - 1)
+			answer1 += 1 << (matches - 1)
 		}
 
 		matchesCount = append(matchesCount, matches)
@@ -136,13 +136,5 @@ func main() {
 	}
 
 	fmt.Println("Sum of games: ", answer1, 21138)
-	fmt.Println("Sum of games: ", answer2, 30)
-}
-
-func pow2(n int) int {
-	a := 1
-	for i := 0; i < n; i++ {
-		a *= 2
-	}
-	return a
+	fmt.Println("Sum of games: ", answer2, 7185540)
 }
