@@ -112,8 +112,8 @@ func main() {
 		matchesCount = append(matchesCount, matches)
 	}
 
-	scratches := make([]int, len(matchesCount))
 	//game 2
+	scratches := make([]int, len(matchesCount))
 	for i := 0; i < len(matchesCount); i++ {
 		scratches[i]++
 		if matchesCount[i] > 0 {
