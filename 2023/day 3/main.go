@@ -63,10 +63,8 @@ func main() {
 						numString += string(ch2)
 						usedRunes[encode(i, k)] = true
 					}
-					println(numString)
-					if isPartNumber(input, i, j, k-1) {
-						println("*")
 
+					if isPartNumber(input, i, j, k-1) {
 						v, err := strconv.Atoi(numString)
 						if err != nil {
 							panic(fmt.Sprintf("Error while parsing string %s", numString))
@@ -90,7 +88,7 @@ func main() {
 	//	answer2 += maxState[0] * maxState[1] * maxState[2]
 	//}
 
-	fmt.Println("Sum of games: ", answer1, 4361)
+	fmt.Println("Sum of games: ", answer1, 520135)
 	//fmt.Println("Sum of games: ", answer2, 59795)
 }
 
@@ -103,10 +101,6 @@ func isPartNumber(in [][]rune, i, start, end int) bool {
 
 	if end < len(in[i])-1 {
 		e = end + 1
-	}
-
-	if i == 4 {
-		println("s", s, "e", e)
 	}
 
 	if isNotNumberOrDot(in[i][s]) {
