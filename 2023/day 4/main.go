@@ -35,26 +35,24 @@ func ParseInput(pathToFile string) []*Card {
 			return r == '|' || r == ':'
 		}
 		splits := strings.FieldsFunc(line, delimiter)
-		var winNumbers []int
-		for _, s := range strings.Fields(splits[1]) {
-			v, err := strconv.Atoi(s)
-			if err != nil {
-				panic(fmt.Sprintf("Error while parsing string %s", s))
-			}
-			winNumbers = append(winNumbers, v)
-		}
-		var actualNumber []int
-		for _, s := range strings.Fields(splits[2]) {
-			v, err := strconv.Atoi(string(s))
-			if err != nil {
-				panic(fmt.Sprintf("Error while parsing string %s", s))
-			}
-			actualNumber = append(actualNumber, v)
-		}
+		winNumbers := parseSliceOfInts(splits[1])
+		actualNumbers := parseSliceOfInts(splits[2])
 
-		result = append(result, newCard(winNumbers, actualNumber))
+		result = append(result, newCard(winNumbers, actualNumbers))
 	}
 
+	return result
+}
+
+func parseSliceOfInts(s string) []int {
+	var result []int
+	for _, s := range strings.Fields(s) {
+		v, err := strconv.Atoi(s)
+		if err != nil {
+			panic(fmt.Sprintf("Error while parsing string %s", s))
+		}
+		result = append(result, v)
+	}
 	return result
 }
 
