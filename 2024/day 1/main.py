@@ -25,6 +25,24 @@ def distance(a, b) -> int:
         distance += abs(a[i] - b[i])
     return distance
 
+def similarity(a, b) -> int:
+    if (len(a) != len(b)):
+        print('Error: lists must have the same length')
+        sys.exit(1)
+
+    similarity = 0
+    b_map = {}
+    for s in b:
+        if s in b_map:
+            b_map[s] += 1
+        else:
+            b_map[s] = 1
+
+    for n in a:
+        if n in b_map:
+            similarity += n * b_map[n]
+    return similarity
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Advent of Code 2024 - Day 1')
     parser.add_argument('-i', type=str, help='Input file')
@@ -38,4 +56,5 @@ if __name__ == '__main__':
     a_s = sorted(a1)
     b_s = sorted(b1)
     print(distance(a_s, b_s))
+    print(similarity(a_s, b_s))
     
